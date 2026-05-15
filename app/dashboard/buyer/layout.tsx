@@ -1,8 +1,8 @@
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { authOptions } from "../../../lib/auth";
 import { redirect } from "next/navigation";
-import { BuyerSidebar } from "@/components/ui/buyer-sidebar";
-import { BuyerTopBarWrapper } from "@/components/ui/buyer-topbar-wrapper";
+import { BuyerSidebar } from "../../../components/ui/buyer-sidebar";
+import { BuyerTopBarWrapper } from "../../../components/ui/buyer-topbar-wrapper";
 
 export default async function BuyerLayout({
   children,

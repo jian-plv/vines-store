@@ -1,5 +1,5 @@
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { authOptions } from "../../../lib/auth";
 import { prisma } from "@/lib/prisma";
 import { Package, ShoppingBag, Tag } from "lucide-react";
 import { BuyerHomeClient } from "@/components/buyer/buyer-home-client";

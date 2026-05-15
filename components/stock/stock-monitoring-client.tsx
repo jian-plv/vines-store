@@ -6,7 +6,7 @@ import {
   CheckCircle2, ChevronDown, ClipboardList, Calendar,
   RefreshCw, Package,
 } from "lucide-react";
-import { recordStockMovement } from "@/lib/actions/stock";
+import { recordStockMovement } from "../../lib/actions/stock";
 
 export type StockProduct = {
   id: string; name: string; currentStock: number;
