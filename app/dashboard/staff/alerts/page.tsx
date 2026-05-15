@@ -1,9 +1,9 @@
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { authOptions } from "../../../../lib/auth";
 import { redirect } from "next/navigation";
-import { prisma } from "@/lib/prisma";
-import { StaffAlertsClient } from "@/components/staff/staff-alerts-client";
-import type { StaffAlert } from "@/components/staff/staff-alerts-client";
+import { prisma } from "../../../../lib/prisma";
+import { StaffAlertsClient } from "../../../../components/staff/staff-alerts-client";
+import type { StaffAlert } from "../../../../components/staff/staff-alerts-client";
 
 // ─── Static fallback ──────────────────────────────────────────────────────────
 const now = new Date();
