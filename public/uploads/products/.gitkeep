@@ -1,0 +1,3 @@
+# Keep the folder but ignore uploaded files
+public/uploads/products/*
+!public/uploads/products/.gitkeep
