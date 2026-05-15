@@ -1,8 +1,8 @@
 // lib/pos-data.ts
 // Shared data loader used by both admin and staff POS pages.
 
-import { prisma } from "@/lib/prisma";
-import type { POSProduct } from "@/components/pos/pos-client";
+import { prisma } from "./prisma";
+import type { POSProduct } from "../components/pos/pos-client";
 
 const FALLBACK: POSProduct[] = [
   { id:"p1", name:"Fresh Milk 1L",       category:"Dairy",       price:"85.00",  currentStock:58,  status:"NEAR_EXPIRY" },

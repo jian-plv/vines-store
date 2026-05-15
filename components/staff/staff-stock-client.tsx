@@ -6,7 +6,7 @@ import {
   CheckCircle2, AlertTriangle, Package,
   Clock, Search, ChevronDown, Calendar, User,
 } from "lucide-react";
-import { recordStockMovement } from "@/lib/actions/stock";
+import { recordStockMovement } from "../../lib/actions/stock";
 
 // ─── Types ─────────────────────────────────────────────────────────────────────
 
