@@ -1,6 +1,6 @@
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
-import { StaffQuickLinks } from "@/components/dashboard/staff-quick-links";
+import { authOptions } from "../../../lib/auth";
+import { StaffQuickLinks } from "../../../components/dashboard/staff-quick-links";
 
 export default async function StaffDashboardPage() {
   const session = await getServerSession(authOptions);

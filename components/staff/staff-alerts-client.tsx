@@ -5,7 +5,7 @@ import {
   AlertTriangle, Clock, XCircle, CheckCircle2,
   RefreshCw, Loader2, Bell,
 } from "lucide-react";
-import { resolveAlert, autoDetectAlerts } from "@/lib/actions/alerts";
+import { resolveAlert, autoDetectAlerts } from "../../lib/actions/alerts";
 
 // ─── Types ─────────────────────────────────────────────────────────────────────
 
