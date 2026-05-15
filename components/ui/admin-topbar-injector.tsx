@@ -1,6 +1,6 @@
 "use client";
 
-import { AdminTopBar } from "@/components/ui/admin-topbar";
+import { AdminTopBar } from "./admin-topbar";
 import { usePathname } from "next/navigation";
 
 // Maps route segments → human-readable titles (matches PDF header labels)

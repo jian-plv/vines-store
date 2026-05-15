@@ -1,7 +1,7 @@
-import { prisma } from "@/lib/prisma";
-import { DashboardSummaryCards } from "@/components/dashboard/summary-cards";
-import { ProductMovementPanels } from "@/components/dashboard/product-movement-panels";
-import type { ProductMovementRow } from "@/components/dashboard/product-movement-panels";
+import { prisma } from "../../../lib/prisma";
+import { DashboardSummaryCards } from "../../../components/dashboard/summary-cards";
+import { ProductMovementPanels } from "../../../components/dashboard/product-movement-panels";
+import type { ProductMovementRow } from "../../../components/dashboard/product-movement-panels";
 
 // ─── Static fallback data (used when DB is not yet connected) ─────────────────
 const FALLBACK_FAST: ProductMovementRow[] = [
