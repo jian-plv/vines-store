@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { AuthProvider } from "@/components/providers/auth-provider";
+import { AuthProvider } from "../components/providers/auth-provider";
 
 export const metadata: Metadata = {
   title: "Vine's Store – Inventory Management System",

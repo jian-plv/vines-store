@@ -1,9 +1,9 @@
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { authOptions } from "../../../../lib/auth";
 import { redirect } from "next/navigation";
-import { prisma } from "@/lib/prisma";
-import { StaffStockClient } from "@/components/staff/staff-stock-client";
-import type { StaffStockProduct, StaffStockMovement } from "@/components/staff/staff-stock-client";
+import { prisma } from "../../../../lib/prisma";
+import { StaffStockClient } from "../../../../components/staff/staff-stock-client";
+import type { StaffStockProduct, StaffStockMovement } from "../../../../components/staff/staff-stock-client";
 
 // ─── Static fallback data ─────────────────────────────────────────────────────
 const FALLBACK_PRODUCTS: StaffStockProduct[] = [
