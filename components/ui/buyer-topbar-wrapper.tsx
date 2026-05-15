@@ -1,6 +1,6 @@
 "use client";
 
-import { BuyerTopBar } from "@/components/ui/buyer-topbar";
+import { BuyerTopBar } from "./buyer-topbar";
 
 export function BuyerTopBarWrapper() {
   return <BuyerTopBar />;

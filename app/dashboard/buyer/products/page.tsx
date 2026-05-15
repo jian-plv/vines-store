@@ -1,6 +1,6 @@
-import { prisma } from "@/lib/prisma";
-import { BuyerProductCatalog } from "@/components/buyer/buyer-product-catalog";
-import type { BuyerProduct } from "@/components/buyer/buyer-product-catalog";
+import { prisma } from "../../../../lib/prisma";
+import { BuyerProductCatalog } from "../../../../components/buyer/buyer-product-catalog";
+import type { BuyerProduct } from "../../../../components/buyer/buyer-product-catalog";
 
 // ─── Typed fallback ───────────────────────────────────────────────────────────
 const FALLBACK: BuyerProduct[] = [
