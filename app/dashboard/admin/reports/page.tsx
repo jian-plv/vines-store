@@ -1,9 +1,9 @@
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { authOptions } from "../../../../lib/auth";
 import { redirect } from "next/navigation";
-import { prisma } from "@/lib/prisma";
-import { ReportsClient } from "@/components/reports/reports-client";
-import type { ReportsData } from "@/components/reports/reports-client";
+import { prisma } from "../../../../lib/prisma";
+import { ReportsClient } from "../../../../components/reports/reports-client";
+import type { ReportsData } from "../../../../components/reports/reports-client";
 
 // ─── Static fallback (seed-data values) ───────────────────────────────────────
 

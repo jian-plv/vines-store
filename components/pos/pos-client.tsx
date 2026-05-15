@@ -6,7 +6,7 @@ import {
   Printer, Loader2, CheckCircle2, X, Barcode,
   ShoppingBag, AlertTriangle,
 } from "lucide-react";
-import { processSale } from "@/lib/actions/pos";
+import { processSale } from "../../lib/actions/pos";
 
 // ─── Types ─────────────────────────────────────────────────────────────────────
 

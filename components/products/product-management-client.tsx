@@ -7,7 +7,7 @@ import {
   Upload, Image as ImageIcon,
 } from "lucide-react";
 import type { Category } from "@prisma/client";
-import { addProduct, updateProduct, deleteProduct } from "@/lib/actions/products";
+import { addProduct, updateProduct, deleteProduct } from "../../lib/actions/products";
 
 // ─── Types ─────────────────────────────────────────────────────────────────────
 
