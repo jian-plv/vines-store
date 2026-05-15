@@ -34,7 +34,7 @@ const STAFF_LINKS = [
   },
   {
     label:    "Product Lookup",
-    href:     "/dashboard/staff/products",
+    href:     "/dashboard/staff/product-lookup",
     icon:     Search,
     desc:     "Check stock levels, prices & shelf location",
     accent:   "#7c3aed",
