@@ -1,9 +1,9 @@
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { authOptions } from "../../../../lib/auth";
 import { redirect } from "next/navigation";
-import { prisma } from "@/lib/prisma";
-import { ProductManagementClient } from "@/components/products/product-management-client";
-import type { SerializedProduct } from "@/components/products/product-management-client";
+import { prisma } from "../../../../lib/prisma";
+import { ProductManagementClient } from "../../../../components/products/product-management-client";
+import type { SerializedProduct } from "../../../../components/products/product-management-client";
 
 // ─── Static fallback (matches PDF + seed data) ────────────────────────────────
 const FALLBACK_CATEGORIES = [
