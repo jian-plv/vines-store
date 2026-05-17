@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import { createPortal } from "react-dom";
 import {
   Search, Package, MapPin, Barcode,
   AlertTriangle, Clock, XCircle, CheckCircle2,
@@ -674,96 +675,120 @@ function TableRow({ product:p, isLast, onClick }:{
 
 // ─── Detail Modal ─────────────────────────────────────────────────────────────
 
-function ProductDetailModal({ product:p, onClose }:{ product:LookupProduct; onClose:()=>void }) {
-  const cfg    = STATUS_CFG[p.status] ?? STATUS_CFG.NORMAL;
-  const Icon   = cfg.icon;
-  const isLow  = p.currentStock <= p.lowStockThreshold;
-  const catClr = CAT_COLOR[p.category] ?? { bg:"#f1f5f9", color:"#475569" };
-  const stockPct = Math.min(100, Math.round(p.currentStock / Math.max(p.lowStockThreshold*3,1) * 100));
+function ProductDetailModal({ product:p, onClose }:{
+  product: LookupProduct; onClose: () => void;
+}) {
+  const cfg      = STATUS_CFG[p.status] ?? STATUS_CFG.NORMAL;
+  const Icon     = cfg.icon;
+  const isLow    = p.currentStock <= p.lowStockThreshold;
+  const catClr   = CAT_COLOR[p.category] ?? { bg:"#f1f5f9", color:"#475569" };
+  const stockPct = Math.min(100, Math.round(
+    p.currentStock / Math.max(p.lowStockThreshold * 3, 1) * 100
+  ));
 
-  // Lock body scroll when modal is open
+  // Lock body scroll while modal is open
   useEffect(() => {
+    const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
-    return () => { document.body.style.overflow = ""; };
+    return () => { document.body.style.overflow = prev; };
   }, []);
 
-  return (
+  // Close on Escape key
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [onClose]);
+
+  const modal = (
     <div
       onClick={onClose}
       style={{
-        position: "fixed",
-        top: 0, left: 0, right: 0, bottom: 0,
-        zIndex: 9999,
-        background: "rgba(15,23,42,0.55)",
-        backdropFilter: "blur(3px)",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        padding: "20px",
-        overflowY: "auto",
+        position:        "fixed",
+        top:             0,
+        left:            0,
+        width:           "100vw",
+        height:          "100vh",
+        zIndex:          99999,
+        background:      "rgba(15,23,42,0.55)",
+        backdropFilter:  "blur(3px)",
+        display:         "flex",
+        alignItems:      "center",
+        justifyContent:  "center",
+        padding:         "20px",
+        boxSizing:       "border-box",
       }}
     >
       <div
         onClick={e => e.stopPropagation()}
         style={{
-          background: "#fff",
+          background:   "#fff",
           borderRadius: 14,
-          width: "100%",
-          maxWidth: 440,
-          maxHeight: "90vh",
-          overflowY: "auto",
-          boxShadow: "0 32px 80px rgba(0,0,0,0.25)",
-          overflow: "hidden",
-          animation: "modal-in 0.2s cubic-bezier(0.22,1,0.36,1)",
-          flexShrink: 0,
+          width:        "100%",
+          maxWidth:     440,
+          maxHeight:    "85vh",
+          overflowY:    "auto",
+          boxShadow:    "0 32px 80px rgba(0,0,0,0.25)",
+          animation:    "modal-in 0.2s cubic-bezier(0.22,1,0.36,1)",
+          flexShrink:   0,
         }}
       >
         {/* Hero image */}
         <div style={{
-          height: 160, overflow: "hidden",
+          height:     160,
+          overflow:   "hidden",
           background: `linear-gradient(135deg, ${catClr.bg} 0%, ${catClr.bg}66 100%)`,
-          display: "flex", alignItems: "center", justifyContent: "center",
-          position: "relative",
+          display:    "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          position:   "relative",
+          flexShrink: 0,
         }}>
           {p.imageUrl
             ? <img src={p.imageUrl} alt={p.name}
                 style={{ width:"100%", height:"100%", objectFit:"cover" }}/>
-            : <span style={{ fontSize:72, lineHeight:1 }}>{CAT_EMOJI[p.category] ?? "📦"}</span>}
+            : <span style={{ fontSize:64, lineHeight:1 }}>
+                {CAT_EMOJI[p.category] ?? "📦"}
+              </span>}
 
           {/* Close button */}
           <button onClick={onClose} style={{
-            position: "absolute", top: 12, right: 12,
-            width: 32, height: 32, borderRadius: "50%",
-            background: "rgba(255,255,255,0.90)",
-            border: "1px solid rgba(0,0,0,0.08)",
-            display: "flex", alignItems: "center", justifyContent: "center",
-            cursor: "pointer", color: "#374151",
-            boxShadow: "0 2px 8px rgba(0,0,0,0.12)",
+            position:   "absolute", top:12, right:12,
+            width:32,   height:32,  borderRadius:"50%",
+            background: "rgba(255,255,255,0.92)",
+            border:     "1px solid rgba(0,0,0,0.08)",
+            display:    "flex", alignItems:"center", justifyContent:"center",
+            cursor:     "pointer", color:"#374151",
+            boxShadow:  "0 2px 8px rgba(0,0,0,0.12)",
+            zIndex:     1,
           }}>
             <X size={15} strokeWidth={2.5}/>
           </button>
 
           {/* Status + Price overlays */}
           <div style={{
-            position: "absolute", bottom: 12, left: 12, right: 12,
-            display: "flex", justifyContent: "space-between", alignItems: "flex-end",
+            position: "absolute", bottom:12, left:12, right:12,
+            display:  "flex", justifyContent:"space-between", alignItems:"flex-end",
           }}>
             <span style={{
-              display: "inline-flex", alignItems: "center", gap: 5,
-              fontSize: 12, fontWeight: 700,
-              background: "rgba(255,255,255,0.92)",
-              color: cfg.color, padding: "5px 12px",
-              borderRadius: 99, backdropFilter: "blur(4px)",
-              border: `1px solid ${cfg.border}`,
+              display:        "inline-flex", alignItems:"center", gap:5,
+              fontSize:       12, fontWeight:700,
+              background:     "rgba(255,255,255,0.92)",
+              color:          cfg.color,
+              padding:        "5px 12px", borderRadius:99,
+              backdropFilter: "blur(4px)",
+              border:         `1px solid ${cfg.border}`,
             }}>
               <Icon size={12} strokeWidth={2.5}/>{cfg.label}
             </span>
             <span style={{
-              background: "rgba(15,23,42,0.85)",
-              color: "#fff", fontSize: 18, fontWeight: 800,
-              padding: "6px 14px", borderRadius: 99,
+              background:     "rgba(15,23,42,0.85)",
+              color:          "#fff", fontSize:18, fontWeight:800,
+              padding:        "6px 14px", borderRadius:99,
               backdropFilter: "blur(4px)",
-              letterSpacing: "-0.02em",
+              letterSpacing:  "-0.02em",
             }}>
               ₱{parseFloat(p.price).toFixed(2)}
             </span>
@@ -771,73 +796,96 @@ function ProductDetailModal({ product:p, onClose }:{ product:LookupProduct; onCl
         </div>
 
         {/* Details */}
-        <div style={{ padding: "20px 24px 22px" }}>
+        <div style={{ padding:"20px 24px 22px" }}>
+          {/* Category chip */}
           <div style={{
-            display: "inline-flex", alignItems: "center", gap: 6,
-            fontSize: 12, fontWeight: 700,
-            background: catClr.bg, color: catClr.color,
-            padding: "4px 11px", borderRadius: 99, marginBottom: 10,
+            display:      "inline-flex", alignItems:"center", gap:6,
+            fontSize:     12, fontWeight:700,
+            background:   catClr.bg, color:catClr.color,
+            padding:      "4px 11px", borderRadius:99, marginBottom:10,
           }}>
             {CAT_EMOJI[p.category] ?? "📦"} {p.category}
           </div>
 
+          {/* Name */}
           <div style={{
-            fontSize: 21, fontWeight: 800, color: "#0f172a",
-            letterSpacing: "-0.025em", marginBottom: 18, lineHeight: 1.25,
+            fontSize:      21, fontWeight:800, color:"#0f172a",
+            letterSpacing: "-0.025em", marginBottom:18, lineHeight:1.25,
           }}>
             {p.name}
           </div>
 
           {/* Stock bar */}
           <div style={{
-            background: isLow ? "#fff7ed" : "#f0fdf4",
-            border: `1px solid ${isLow ? "#fed7aa" : "#bbf7d0"}`,
-            borderRadius: 12, padding: "14px 16px", marginBottom: 14,
+            background:   isLow ? "#fff7ed" : "#f0fdf4",
+            border:       `1px solid ${isLow ? "#fed7aa" : "#bbf7d0"}`,
+            borderRadius: 12, padding:"14px 16px", marginBottom:14,
           }}>
-            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
-              <span style={{ fontSize: 13, fontWeight: 600, color: "#374151" }}>Stock Level</span>
+            <div style={{
+              display:"flex", justifyContent:"space-between", marginBottom:8,
+            }}>
+              <span style={{ fontSize:13, fontWeight:600, color:"#374151" }}>
+                Stock Level
+              </span>
               <span style={{
-                fontSize: 16, fontWeight: 800,
-                color: p.currentStock < 1 ? "#b91c1c" : isLow ? "#c2410c" : "#15803d",
-                letterSpacing: "-0.02em",
+                fontSize:      16, fontWeight:800, letterSpacing:"-0.02em",
+                color: p.currentStock < 1 ? "#b91c1c"
+                     : isLow            ? "#c2410c" : "#15803d",
               }}>
                 {p.currentStock} units
-                {isLow && <span style={{ fontSize:11, fontWeight:600, marginLeft:6 }}>⚠ Below threshold</span>}
+                {isLow && (
+                  <span style={{ fontSize:11, fontWeight:600, marginLeft:6 }}>
+                    ⚠ Below threshold
+                  </span>
+                )}
               </span>
             </div>
-            <div style={{ height: 8, background: "rgba(0,0,0,0.08)", borderRadius: 99, overflow: "hidden" }}>
+            <div style={{
+              height:8, background:"rgba(0,0,0,0.08)",
+              borderRadius:99, overflow:"hidden",
+            }}>
               <div style={{
-                height: "100%", borderRadius: 99, width: `${stockPct}%`,
-                background: p.currentStock < 1 ? "#dc2626" : isLow ? "#ea580c" : "#16a34a",
-                transition: "width 0.3s",
+                height:"100%", borderRadius:99,
+                width:`${stockPct}%`,
+                background: p.currentStock < 1 ? "#dc2626"
+                          : isLow             ? "#ea580c" : "#16a34a",
+                transition:"width 0.3s",
               }}/>
             </div>
-            <div style={{ display: "flex", justifyContent: "space-between", marginTop: 6 }}>
-              <span style={{ fontSize: 11, color: "#94a3b8" }}>0</span>
-              <span style={{ fontSize: 11, color: "#94a3b8" }}>Min threshold: {p.lowStockThreshold}</span>
+            <div style={{
+              display:"flex", justifyContent:"space-between", marginTop:6,
+            }}>
+              <span style={{ fontSize:11, color:"#94a3b8" }}>0</span>
+              <span style={{ fontSize:11, color:"#94a3b8" }}>
+                Min threshold: {p.lowStockThreshold}
+              </span>
             </div>
           </div>
 
           {/* Info grid */}
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 14 }}>
+          <div style={{
+            display:"grid", gridTemplateColumns:"1fr 1fr",
+            gap:10, marginBottom:14,
+          }}>
             {[
-              { label:"Shelf Location", value: p.shelfLocation ?? "Not set", icon: MapPin  },
-              { label:"Barcode",        value: p.barcode       ?? "Not set", icon: Barcode },
+              { label:"Shelf Location", value:p.shelfLocation ?? "Not set", icon:MapPin  },
+              { label:"Barcode",        value:p.barcode       ?? "Not set", icon:Barcode },
             ].map(row => (
               <div key={row.label} style={{
-                background: "#f8fafc", borderRadius: 10,
-                padding: "12px 14px", border: "1px solid #f1f5f9",
+                background:"#f8fafc", borderRadius:10,
+                padding:"12px 14px", border:"1px solid #f1f5f9",
               }}>
                 <div style={{
-                  display: "flex", alignItems: "center", gap: 5,
-                  fontSize: 11.5, color: "#94a3b8", fontWeight: 500, marginBottom: 5,
+                  display:"flex", alignItems:"center", gap:5,
+                  fontSize:11.5, color:"#94a3b8", fontWeight:500, marginBottom:5,
                 }}>
                   <row.icon size={12} strokeWidth={2}/>{row.label}
                 </div>
                 <div style={{
-                  fontSize: 13.5, fontWeight: 700, color: "#0f172a",
-                  fontFamily: row.label === "Barcode" ? "DM Mono, monospace" : "DM Sans, sans-serif",
-                  wordBreak: "break-all",
+                  fontSize:13.5, fontWeight:700, color:"#0f172a",
+                  fontFamily: row.label==="Barcode"
+                    ? "DM Mono, monospace" : "DM Sans, sans-serif",
+                  wordBreak:"break-all",
                 }}>
                   {row.value}
                 </div>
@@ -848,22 +896,38 @@ function ProductDetailModal({ product:p, onClose }:{ product:LookupProduct; onCl
 
         {/* Footer */}
         <div style={{
-          padding: "12px 24px 18px",
-          borderTop: "1px solid #f1f5f9",
-          display: "flex", justifyContent: "flex-end",
+          padding:     "12px 24px 18px",
+          borderTop:   "1px solid #f1f5f9",
+          display:     "flex",
+          justifyContent: "flex-end",
         }}>
-          <button onClick={onClose} style={{
-            padding: "9px 24px", borderRadius: 9,
-            border: "1px solid #e2e8f0", background: "#fff",
-            color: "#374151", fontSize: 13.5, fontWeight: 600,
-            fontFamily: "DM Sans, sans-serif", cursor: "pointer",
-          }}
-          onMouseEnter={e => ((e.currentTarget as HTMLButtonElement).style.background = "#f8fafc")}
-          onMouseLeave={e => ((e.currentTarget as HTMLButtonElement).style.background = "#fff")}>
+          <button onClick={onClose}
+            style={{
+              padding:"9px 24px", borderRadius:9,
+              border:"1px solid #e2e8f0", background:"#fff",
+              color:"#374151", fontSize:13.5, fontWeight:600,
+              fontFamily:"DM Sans, sans-serif", cursor:"pointer",
+            }}
+            onMouseEnter={e =>
+              ((e.currentTarget as HTMLButtonElement).style.background = "#f8fafc")}
+            onMouseLeave={e =>
+              ((e.currentTarget as HTMLButtonElement).style.background = "#fff")}
+          >
             Close
           </button>
         </div>
       </div>
+
+      <style>{`
+        @keyframes modal-in {
+          from { opacity:0; transform: scale(0.96) translateY(10px); }
+          to   { opacity:1; transform: scale(1)    translateY(0);    }
+        }
+      `}</style>
     </div>
   );
+
+  // ← Portal renders modal directly into document.body
+  // bypassing ALL parent containers and their scroll/overflow
+  return createPortal(modal, document.body);
 }
