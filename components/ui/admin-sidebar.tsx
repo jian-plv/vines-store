@@ -131,26 +131,8 @@ export function AdminSidebar({ alertCount = 0 }: { alertCount?: number }) {
         padding:"10px", display:"flex",
         flexDirection:"column", gap:2, flexShrink:0,
       }}>
-        <Link href="/dashboard/admin/settings"
-          onClick={() => setOpen(false)}
-          style={{
-            display:"flex", alignItems:"center", gap:9,
-            padding:"9px 10px", borderRadius:8,
-            textDecoration:"none", color:"#94a3b8",
-            fontSize:13, fontWeight:450,
-          }}
-          onMouseEnter={e => {
-            (e.currentTarget as HTMLAnchorElement).style.background = "#1e293b";
-            (e.currentTarget as HTMLAnchorElement).style.color      = "#e2e8f0";
-          }}
-          onMouseLeave={e => {
-            (e.currentTarget as HTMLAnchorElement).style.background = "transparent";
-            (e.currentTarget as HTMLAnchorElement).style.color      = "#94a3b8";
-          }}
-        >
-          <Settings size={17} style={{ opacity:0.7 }}/><span>Settings</span>
-        </Link>
 
+        
         {/* User row */}
         {session?.user && (
           <div style={{
@@ -176,6 +158,26 @@ export function AdminSidebar({ alertCount = 0 }: { alertCount?: number }) {
             </div>
           </div>
         )}
+
+        <Link href="/dashboard/admin/settings"
+          onClick={() => setOpen(false)}
+          style={{
+            display:"flex", alignItems:"center", gap:9,
+            padding:"9px 10px", borderRadius:8,
+            textDecoration:"none", color:"#94a3b8",
+            fontSize:13, fontWeight:450,
+          }}
+          onMouseEnter={e => {
+            (e.currentTarget as HTMLAnchorElement).style.background = "#1e293b";
+            (e.currentTarget as HTMLAnchorElement).style.color      = "#e2e8f0";
+          }}
+          onMouseLeave={e => {
+            (e.currentTarget as HTMLAnchorElement).style.background = "transparent";
+            (e.currentTarget as HTMLAnchorElement).style.color      = "#94a3b8";
+          }}
+        >
+          <Settings size={17} style={{ opacity:0.7 }}/><span>Settings</span>
+        </Link>
 
         <button onClick={() => signOut({ callbackUrl:"/login" })}
           style={{
