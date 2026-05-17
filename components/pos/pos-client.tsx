@@ -175,15 +175,17 @@ export function POSClient({
 
   // ─────────────────────────────────────────────────────────────────────────
   return (
-    <div
-      style={{
-        display: "grid",
-        gridTemplateColumns: "1fr 340px",
-        gap: 0,
-        height: "calc(100vh - 56px)",    // full height minus topbar
-        overflow: "hidden",
-      }}
-    >
+    // REPLACE with:
+<div
+  style={{
+    display: "grid",
+    gridTemplateColumns: "1fr 340px",
+    gap: 0,
+    height: "calc(100vh - 56px)",
+    overflow: "hidden",
+  }}
+  className="pos-layout"
+>
       {/* ════════════════════════════════════════════════
           LEFT — Product browser
       ════════════════════════════════════════════ */}
@@ -979,3 +981,4 @@ function CartRow({
     </div>
   );
 }
+

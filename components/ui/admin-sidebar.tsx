@@ -163,7 +163,8 @@ export function AdminSidebar({ alertCount = 0 }: { alertCount?: number }) {
               display:"flex", alignItems:"center", justifyContent:"center",
               fontSize:12, fontWeight:700, color:"#fff", flexShrink:0,
             }}>
-              {session.user.name?.[0]?.toUpperCase() ?? "A"}
+              // REPLACE with — shows role initial instead:
+{session.user.role === "ADMIN" ? "A" : session.user.name?.[0]?.toUpperCase() ?? "A"}
             </div>
             <div style={{ flex:1, minWidth:0 }}>
               <div style={{

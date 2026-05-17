@@ -17,7 +17,11 @@ export default async function BuyerLayout({
   return (
     <div style={{ display: "flex", minHeight: "100vh", background: "#f8fafc" }}>
       <BuyerSidebar />
-      <div style={{ marginLeft: 230, flex: 1, display: "flex", flexDirection: "column", minHeight: "100vh" }}>
+      // REPLACE:
+<div
+  style={{ marginLeft: 230, flex: 1, display: "flex", flexDirection: "column", minHeight: "100vh" }}
+  className="main-content"
+>
         <BuyerTopBarWrapper />
         <main style={{ flex: 1 }}>
           {children}

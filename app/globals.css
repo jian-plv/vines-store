@@ -571,3 +571,13 @@
     margin-left: 0 !important;
   }
 }
+
+/* ── POS Mobile ── */
+@media (max-width: 768px) {
+  .pos-layout {
+    grid-template-columns: 1fr !important;
+    height: auto !important;
+    overflow: visible !important;
+    flex-direction: column;
+  }
+}
