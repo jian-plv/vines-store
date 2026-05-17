@@ -27,14 +27,15 @@ export default async function AdminLayout({
       <AdminSidebar alertCount={alertCount} />
 
       {/* Right column: topbar + page content */}
-      <div
-        style={{
-          marginLeft: 230,
-          flex: 1,
-          display: "flex",
-          flexDirection: "column",
-          minHeight: "100vh",
-        }}
+      <div style={{
+  marginLeft: 230,
+  flex: 1,
+  display: "flex",
+  flexDirection: "column",
+  minHeight: "100vh",
+}}
+  className="main-content"
+  
       >
         <AdminTopBarInjector alertCount={alertCount} />
         <main style={{ flex: 1 }}>{children}</main>

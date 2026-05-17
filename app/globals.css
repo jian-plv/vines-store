@@ -565,3 +565,9 @@
   .stat-card { border: 1px solid #ccc; break-inside: avoid; }
   .data-table th, .data-table td { padding: 6px 10px; font-size: 11px; }
 }
+
+@media (max-width: 768px) {
+  .main-content {
+    margin-left: 0 !important;
+  }
+}
