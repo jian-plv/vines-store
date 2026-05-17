@@ -683,25 +683,37 @@ function ProductDetailModal({ product:p, onClose }:{ product:LookupProduct; onCl
 
   return (
     <div
-      onClick={onClose}
-      style={{
-        position:"fixed", inset:0, zIndex:60,
-        background:"rgba(15,23,42,0.55)",
-        backdropFilter:"blur(4px)",
-        display:"flex", alignItems:"center", justifyContent:"center",
-        padding:20,
-      }}
-    >
+  onClick={onClose}
+  style={{
+    position: "fixed",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    zIndex: 9999,
+    background: "rgba(15,23,42,0.55)",
+    backdropFilter: "blur(3px)",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 20,
+    overflowY: "auto",
+  }}
+>
       <div
-        onClick={e => e.stopPropagation()}
-        style={{
-          background:"#fff", borderRadius:16,
-          width:"100%", maxWidth:480,
-          boxShadow:"0 32px 80px rgba(0,0,0,0.25)",
-          overflow:"hidden",
-          animation:"modal-in 0.2s cubic-bezier(0.22,1,0.36,1)",
-        }}
-      >
+  onClick={e => e.stopPropagation()}
+  style={{
+    background: "#fff",
+    borderRadius: 14,
+    width: "100%",
+    maxWidth: 440,
+    boxShadow: "0 32px 80px rgba(0,0,0,0.25)",
+    overflow: "hidden",
+    animation: "modal-in 0.2s cubic-bezier(0.22,1,0.36,1)",
+    margin: "auto",
+    position: "relative",
+  }}
+>
         {/* Hero image */}
         <div style={{
           height:180, overflow:"hidden",
