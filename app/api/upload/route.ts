@@ -1,7 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
-import { writeFile, mkdir } from "fs/promises";
-import { join } from "path";
-import { existsSync } from "fs";
+import { v2 as cloudinary } from "cloudinary";
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key:    process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 export async function POST(req: NextRequest) {
   try {
@@ -24,33 +28,29 @@ export async function POST(req: NextRequest) {
     // Validate file size (max 2MB)
     if (file.size > 2 * 1024 * 1024) {
       return NextResponse.json(
-        { error: "File too large. Maximum size is 2MB." },
+        { error: "File too large. Maximum 2MB." },
         { status: 400 }
       );
     }
 
-    // Create uploads folder if it doesn't exist
-    const uploadDir = join(process.cwd(), "public", "uploads", "products");
-    if (!existsSync(uploadDir)) {
-      await mkdir(uploadDir, { recursive: true });
-    }
-
-    // Generate unique filename
-    const ext      = file.name.split(".").pop() ?? "jpg";
-    const filename = `product-${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
-    const filepath = join(uploadDir, filename);
-
-    // Save file to disk
+    // Convert file to base64
     const bytes  = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
-    await writeFile(filepath, buffer);
+    const base64 = `data:${file.type};base64,${buffer.toString("base64")}`;
 
-    // Return the public URL
-    const url = `/uploads/products/${filename}`;
-    return NextResponse.json({ url });
+    // Upload to Cloudinary
+    const result = await cloudinary.uploader.upload(base64, {
+      folder:         "vines-store/products",
+      transformation: [
+        { width: 500, height: 500, crop: "limit" },
+        { quality: "auto", fetch_format: "auto"  },
+      ],
+    });
+
+    return NextResponse.json({ url: result.secure_url });
 
   } catch (error) {
-    console.error("Upload error:", error);
+    console.error("Cloudinary upload error:", error);
     return NextResponse.json({ error: "Upload failed." }, { status: 500 });
   }
 }
