@@ -51,35 +51,31 @@ export default async function ProductsPage() {
   const session = await getServerSession(authOptions);
   if (!session || session.user.role !== "ADMIN") redirect("/login");
 
-  // Try DB; fall back silently
-  let products:   SerializedProduct[] = FALLBACK_PRODUCTS;
-  let categories: any[]               = FALLBACK_CATEGORIES;
+  let products   = [] as any[];
+  let categories = [] as any[];
 
   try {
-    const [dbProducts, dbCategories] = await Promise.all([
+    [products, categories] = await Promise.all([
       prisma.product.findMany({
-        include:  { category: true },
+        orderBy: { name: "asc" },
+        include: { category: true },
+      }),
+      prisma.category.findMany({
         orderBy: { name: "asc" },
       }),
-      prisma.category.findMany({ orderBy: { name: "asc" } }),
     ]);
 
-    products = dbProducts.map((p) => ({
+    products = products.map((p: any) => ({
       ...p,
       price:          p.price.toString(),
+      originalPrice:  p.originalPrice?.toString() ?? null,
       expirationDate: p.expirationDate?.toISOString() ?? null,
       createdAt:      p.createdAt.toISOString(),
       updatedAt:      p.updatedAt.toISOString(),
       imageUrl:       p.imageUrl ?? null,
-      category: {
-        ...p.category,
-        createdAt: p.category.createdAt,
-      },
     }));
-
-    categories = dbCategories;
-  } catch {
-    // DB offline — static data is already set
+  } catch (e) {
+    console.error("ProductsPage error:", e);
   }
 
   return (

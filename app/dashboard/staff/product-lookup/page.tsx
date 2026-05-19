@@ -30,7 +30,7 @@ export default async function ProductLookupPage() {
   try {
     const dbProducts = await prisma.product.findMany({
       orderBy: { name: "asc" },
-      include: { category: true },   // ← use include not select so price is available
+      include: { category: true },   
     });
 
     if (dbProducts.length > 0) {

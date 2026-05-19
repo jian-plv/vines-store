@@ -13,7 +13,7 @@ const FALLBACK: BuyerProduct[] = [
   { id:"p7", name:"Instant Coffee 200g", category:"Beverages",    price:"95.00",  currentStock:80,  status:"NORMAL",      imageUrl:null, isDiscounted:false, originalPrice:null, discountPercent:null },
   { id:"p8", name:"Vinegar 350ml",       category:"Condiments",   price:"18.00",  currentStock:40,  status:"NORMAL",      imageUrl:null, isDiscounted:false, originalPrice:null, discountPercent:null },
 ];
-FALLBACK.sort((a, b) => a.name.localeCompare(b.name));
+
 export default async function BuyerProductsPage() {
   let products: BuyerProduct[] = FALLBACK;
 
@@ -24,17 +24,17 @@ export default async function BuyerProductsPage() {
     });
 
     if (dbProducts.length > 0) {
-      products = dbProducts.map((p): BuyerProduct => ({
+      products = dbProducts.map((p: any): BuyerProduct => ({
         id:              p.id,
         name:            p.name,
         category:        p.category?.name ?? "Uncategorized",
         price:           p.price.toString(),
         currentStock:    p.currentStock,
-        status:          p.status as string,
-        imageUrl:        (p as any).imageUrl        ?? null,
-        isDiscounted:    (p as any).isDiscounted    ?? false,
-        originalPrice:   (p as any).originalPrice   ? (p as any).originalPrice.toString() : null,
-        discountPercent: (p as any).discountPercent ?? null,
+        status:          p.status,
+        imageUrl:        p.imageUrl          ?? null,
+        isDiscounted:    p.isDiscounted      ?? false,
+        originalPrice:   p.originalPrice     ? p.originalPrice.toString() : null,
+        discountPercent: p.discountPercent   ?? null,
       }));
     }
   } catch (e) {
