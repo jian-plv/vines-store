@@ -512,42 +512,29 @@ async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
             {/* ── Table body ── */}
             <tbody>
               {filtered.length === 0 ? (
-                <tr>
-                  <td colSpan={7}>
-                    <div
-                      style={{
-                        padding: "48px 24px",
-                        textAlign: "center",
-                        color: "#94a3b8",
-                      }}
-                    >
-                      <Package
-                        size={36}
-                        strokeWidth={1.5}
-                        style={{ marginBottom: 10, opacity: 0.4 }}
-                      />
-                      <div style={{ fontSize: 14, fontWeight: 500 }}>
-                        {search
-                          ? `No products match "${search}"`
-                          : "No products yet — add your first one!"}
-                      </div>
-                    </div>
-                  </td>
-                </tr>
-              ) : (
-                filtered.map((p, rowIdx) => (
-                  // REPLACE with:
-<ProductRow
-  key={p.id}
-  p={p}
-  categories={categories}
-  onEdit={openEdit}
-  onDelete={handleDelete}
-  isLast={idx === filtered.length - 1}
-  onPreview={setPreviewImg}
-/>
-                ))
-              )}
+  <tr>
+    <td colSpan={7}>
+      <div style={{ padding: "48px 24px", textAlign: "center", color: "#94a3b8" }}>
+        <Package size={36} strokeWidth={1.5} style={{ marginBottom: 10, opacity: 0.4 }} />
+        <div style={{ fontSize: 14, fontWeight: 500 }}>
+          {search ? `No products match "${search}"` : "No products yet — add your first one!"}
+        </div>
+      </div>
+    </td>
+  </tr>
+) : (
+  filtered.map((p, rowIdx) => (
+    <ProductRow
+      key={p.id}
+      p={p}
+      categories={categories}
+      onEdit={() => openEdit(p)}
+      onDelete={() => setDeleteTarget(p)}
+      isLast={rowIdx === filtered.length - 1}
+      onPreview={setPreviewImg}
+    />
+  ))
+)}
             </tbody>
           </table>
         </div>
@@ -1190,53 +1177,51 @@ function ProductRow({ p, categories, onEdit, onDelete, isLast, onPreview }: {
         <div style={{ display: "flex", gap: 6 }}>
           {/* Edit */}
           <button
-            onClick={onEdit}
-            title="Edit product"
-            style={{
-              width: 30, height: 30, borderRadius: 7,
-              border: "1px solid #e2e8f0", background: "#fff",
-              display: "flex", alignItems: "center", justifyContent: "center",
-              cursor: "pointer", color: "#475569",
-              transition: "all 0.12s",
-            }}
-            onMouseEnter={(e) => {
-              (e.currentTarget as HTMLButtonElement).style.background     = "#f0fdf4";
-              (e.currentTarget as HTMLButtonElement).style.borderColor    = "#86efac";
-              (e.currentTarget as HTMLButtonElement).style.color          = "#15803d";
-            }}
-            onMouseLeave={(e) => {
-              (e.currentTarget as HTMLButtonElement).style.background     = "#fff";
-              (e.currentTarget as HTMLButtonElement).style.borderColor    = "#e2e8f0";
-              (e.currentTarget as HTMLButtonElement).style.color          = "#475569";
-            }}
-          >
-            <Pencil size={13} strokeWidth={2} />
-          </button>
+  onClick={() => onEdit(p)}
+  title="Edit product"
+  style={{
+    width: 30, height: 30, borderRadius: 7,
+    border: "1px solid #e2e8f0", background: "#fff",
+    display: "flex", alignItems: "center", justifyContent: "center",
+    cursor: "pointer", color: "#475569", transition: "all 0.12s",
+  }}
+  onMouseEnter={e => {
+    (e.currentTarget as HTMLButtonElement).style.background  = "#f0fdf4";
+    (e.currentTarget as HTMLButtonElement).style.borderColor = "#86efac";
+    (e.currentTarget as HTMLButtonElement).style.color       = "#15803d";
+  }}
+  onMouseLeave={e => {
+    (e.currentTarget as HTMLButtonElement).style.background  = "#fff";
+    (e.currentTarget as HTMLButtonElement).style.borderColor = "#e2e8f0";
+    (e.currentTarget as HTMLButtonElement).style.color       = "#475569";
+  }}
+>
+  <Pencil size={13} strokeWidth={2} />
+</button>
 
           {/* Delete */}
           <button
-            onClick={onDelete}
-            title="Delete product"
-            style={{
-              width: 30, height: 30, borderRadius: 7,
-              border: "1px solid #e2e8f0", background: "#fff",
-              display: "flex", alignItems: "center", justifyContent: "center",
-              cursor: "pointer", color: "#475569",
-              transition: "all 0.12s",
-            }}
-            onMouseEnter={(e) => {
-              (e.currentTarget as HTMLButtonElement).style.background     = "#fef2f2";
-              (e.currentTarget as HTMLButtonElement).style.borderColor    = "#fca5a5";
-              (e.currentTarget as HTMLButtonElement).style.color          = "#dc2626";
-            }}
-            onMouseLeave={(e) => {
-              (e.currentTarget as HTMLButtonElement).style.background     = "#fff";
-              (e.currentTarget as HTMLButtonElement).style.borderColor    = "#e2e8f0";
-              (e.currentTarget as HTMLButtonElement).style.color          = "#475569";
-            }}
-          >
-            <Trash2 size={13} strokeWidth={2} />
-          </button>
+  onClick={() => onDelete(p.id, p.name)}
+  title="Delete product"
+  style={{
+    width: 30, height: 30, borderRadius: 7,
+    border: "1px solid #e2e8f0", background: "#fff",
+    display: "flex", alignItems: "center", justifyContent: "center",
+    cursor: "pointer", color: "#475569", transition: "all 0.12s",
+  }}
+  onMouseEnter={e => {
+    (e.currentTarget as HTMLButtonElement).style.background  = "#fef2f2";
+    (e.currentTarget as HTMLButtonElement).style.borderColor = "#fca5a5";
+    (e.currentTarget as HTMLButtonElement).style.color       = "#dc2626";
+  }}
+  onMouseLeave={e => {
+    (e.currentTarget as HTMLButtonElement).style.background  = "#fff";
+    (e.currentTarget as HTMLButtonElement).style.borderColor = "#e2e8f0";
+    (e.currentTarget as HTMLButtonElement).style.color       = "#475569";
+  }}
+>
+  <Trash2 size={13} strokeWidth={2} />
+</button>
         </div>
       </td>
     </tr>
