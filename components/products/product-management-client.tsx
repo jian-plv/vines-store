@@ -93,6 +93,7 @@ export function ProductManagementClient({
   products:   SerializedProduct[];
   categories: Category[];
 }) {
+  const [previewImg, setPreviewImg] = useState<string | null>(null);
   const [products,       setProducts]       = useState(init);
   const [search,         setSearch]         = useState("");
   const [filterStatus,   setFilterStatus]   = useState<string>("ALL");
@@ -284,6 +285,74 @@ async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
         </div>
       )}
 
+{/* ── Image Preview Modal ── */}
+{previewImg && (
+  <div
+    onClick={() => setPreviewImg(null)}
+    style={{
+      position:       "fixed",
+      top: 0, left: 0, right: 0, bottom: 0,
+      zIndex:         99999,
+      background:     "rgba(15,23,42,0.80)",
+      backdropFilter: "blur(6px)",
+      display:        "flex",
+      alignItems:     "center",
+      justifyContent: "center",
+      padding:        24,
+      cursor:         "zoom-out",
+    }}
+  >
+    <div
+      onClick={e => e.stopPropagation()}
+      style={{
+        position:     "relative",
+        maxWidth:     520,
+        width:        "100%",
+        background:   "#fff",
+        borderRadius: 16,
+        overflow:     "hidden",
+        boxShadow:    "0 32px 80px rgba(0,0,0,0.4)",
+        animation:    "modal-in 0.2s cubic-bezier(0.22,1,0.36,1)",
+      }}
+    >
+      {/* Close button */}
+      <button
+        onClick={() => setPreviewImg(null)}
+        style={{
+          position:   "absolute", top: 12, right: 12, zIndex: 1,
+          width: 32,  height: 32,  borderRadius: "50%",
+          background: "rgba(0,0,0,0.5)", border: "none",
+          display:    "flex", alignItems: "center", justifyContent: "center",
+          cursor:     "pointer", color: "#fff",
+        }}
+      >
+        <X size={16} strokeWidth={2.5} />
+      </button>
+
+      {/* Full image */}
+      <img
+        src={previewImg}
+        alt="Product preview"
+        style={{
+          width:      "100%",
+          height:     "auto",
+          maxHeight:  "80vh",
+          objectFit:  "contain",
+          display:    "block",
+          background: "#f8fafc",
+        }}
+      />
+    </div>
+
+    <style>{`
+      @keyframes modal-in {
+        from { opacity:0; transform: scale(0.94) translateY(10px); }
+        to   { opacity:1; transform: scale(1)    translateY(0);    }
+      }
+    `}</style>
+  </div>
+)}
+
       {/* ── Toolbar: search + filter tabs + add button ── */}
       <div style={{ marginBottom: 16 }}>
 
@@ -467,13 +536,16 @@ async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
                 </tr>
               ) : (
                 filtered.map((p, rowIdx) => (
-                  <ProductRow
-                    key={p.id}
-                    product={p}
-                    isLast={rowIdx === filtered.length - 1}
-                    onEdit={() => openEdit(p)}
-                    onDelete={() => setDeleteTarget(p)}
-                  />
+                  // REPLACE with:
+<ProductRow
+  key={p.id}
+  p={p}
+  categories={categories}
+  onEdit={openEdit}
+  onDelete={handleDelete}
+  isLast={idx === filtered.length - 1}
+  onPreview={setPreviewImg}
+/>
                 ))
               )}
             </tbody>
@@ -946,13 +1018,14 @@ async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
 
 // ─── Product Row ───────────────────────────────────────────────────────────────
 
-function ProductRow({
-  product: p, isLast, onEdit, onDelete,
-}: {
-  product: SerializedProduct;
-  isLast:  boolean;
-  onEdit:  () => void;
-  onDelete:() => void;
+// REPLACE with:
+function ProductRow({ p, categories, onEdit, onDelete, isLast, onPreview }: {
+  p:          SerializedProduct;
+  categories: Category[];
+  onEdit:     (p: SerializedProduct) => void;
+  onDelete:   (id: string, name: string) => void;
+  isLast:     boolean;
+  onPreview:  (url: string) => void;
 }) {
   const [hovered, setHovered] = useState(false);
 
@@ -966,23 +1039,64 @@ function ProductRow({
 <td style={{ padding: "13px 16px", background: hovered ? "#fafafa" : "transparent" }}>
   <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
 
-    {/* Product image or placeholder */}
-    <div style={{
-      width: 40, height: 40, borderRadius: 8, flexShrink: 0,
-      background: "#f1f5f9", overflow: "hidden",
-      display: "flex", alignItems: "center", justifyContent: "center",
-      border: "1px solid #e2e8f0",
-    }}>
-      {(p as any).imageUrl ? (
-        <img
-          src={(p as any).imageUrl}
-          alt={p.name}
-          style={{ width: "100%", height: "100%", objectFit: "cover" }}
-        />
-      ) : (
-        <Package size={18} color="#94a3b8" strokeWidth={1.5} />
-      )}
-    </div>
+    {/* Clickable image thumbnail */}
+<div
+  onClick={(e) => {
+    if ((p as any).imageUrl) {
+      e.stopPropagation();
+      onPreview((p as any).imageUrl);
+    }
+  }}
+  style={{
+    width: 40, height: 40, borderRadius: 9, flexShrink: 0,
+    background: "#f1f5f9", overflow: "hidden",
+    display: "flex", alignItems: "center", justifyContent: "center",
+    border: "1px solid #e2e8f0",
+    cursor: (p as any).imageUrl ? "zoom-in" : "default",
+    transition: "all 0.13s",
+    position: "relative",
+  }}
+  title={(p as any).imageUrl ? "Click to enlarge" : "No image"}
+  onMouseEnter={e => {
+    if ((p as any).imageUrl) {
+      (e.currentTarget as HTMLDivElement).style.borderColor = "#16a34a";
+      (e.currentTarget as HTMLDivElement).style.transform   = "scale(1.08)";
+    }
+  }}
+  onMouseLeave={e => {
+    (e.currentTarget as HTMLDivElement).style.borderColor = "#e2e8f0";
+    (e.currentTarget as HTMLDivElement).style.transform   = "scale(1)";
+  }}
+>
+  {(p as any).imageUrl ? (
+    <>
+      <img
+        src={(p as any).imageUrl}
+        alt={p.name}
+        style={{ width:"100%", height:"100%", objectFit:"cover" }}
+      />
+      {/* Zoom hint overlay */}
+      <div style={{
+        position:   "absolute", inset: 0,
+        background: "rgba(22,163,74,0.0)",
+        display:    "flex", alignItems: "center", justifyContent: "center",
+        transition: "background 0.13s",
+        fontSize:   14,
+      }}
+        onMouseEnter={e => {
+          (e.currentTarget as HTMLDivElement).style.background = "rgba(22,163,74,0.25)";
+        }}
+        onMouseLeave={e => {
+          (e.currentTarget as HTMLDivElement).style.background = "rgba(22,163,74,0)";
+        }}
+      >
+        🔍
+      </div>
+    </>
+  ) : (
+    <Package size={18} color="#94a3b8" strokeWidth={1.5} />
+  )}
+</div>
 
     {/* Name + shelf */}
     <div style={{ minWidth: 0 }}>
