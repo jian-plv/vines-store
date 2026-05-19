@@ -29,11 +29,18 @@ export default async function ProductLookupPage() {
 
   try {
     const dbProducts = await prisma.product.findMany({
-      orderBy: [
-        { name:    "asc" },
-      ],
-      include: { category: true },
-    });
+  orderBy: { name: "asc" },    // ← alphabetical only
+  select: {
+    id:                true,
+    name:              true,
+    currentStock:      true,
+    lowStockThreshold: true,
+    status:            true,
+    category:          { select: { name: true } },
+    shelfLocation:     true,
+    barcode:           true,
+  },
+});
 
     if (dbProducts.length > 0) {
       products = dbProducts.map((p): LookupProduct => ({
