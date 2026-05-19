@@ -30,7 +30,6 @@ export default async function ProductLookupPage() {
   try {
     const dbProducts = await prisma.product.findMany({
       orderBy: [
-        { status:  "asc" },  // show urgent (LOW/NEAR_EXPIRY) first
         { name:    "asc" },
       ],
       include: { category: true },

@@ -13,7 +13,7 @@ const FALLBACK: BuyerProduct[] = [
   { id:"p7", name:"Instant Coffee 200g", category:"Beverages",    price:"95.00",  currentStock:80,  status:"NORMAL",      imageUrl:null, isDiscounted:false, originalPrice:null, discountPercent:null },
   { id:"p8", name:"Vinegar 350ml",       category:"Condiments",   price:"18.00",  currentStock:40,  status:"NORMAL",      imageUrl:null, isDiscounted:false, originalPrice:null, discountPercent:null },
 ];
-
+FALLBACK.sort((a, b) => a.name.localeCompare(b.name));
 export default async function BuyerProductsPage() {
   let products: BuyerProduct[] = FALLBACK;
 
