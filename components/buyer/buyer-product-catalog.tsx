@@ -3,7 +3,7 @@
 import { useState } from "react";
 import {
   Search, Package, Tag, CheckCircle2,
-  AlertTriangle, Clock, XCircle, Filter,
+  AlertTriangle, Clock, XCircle, Filter, X,
 } from "lucide-react";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
