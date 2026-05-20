@@ -17,6 +17,7 @@ export type POSProduct = {
   price:        string;        // serialised Decimal
   currentStock: number;
   status:       string;
+  imageUrl:     string | null;
 };
 
 type CartItem = {
@@ -825,9 +826,27 @@ function ProductCard({
       )}
 
       {/* Emoji */}
-      <div style={{ fontSize: 26, marginBottom: 8, lineHeight: 1 }}>
-        {catEmoji(product.category)}
-      </div>
+      <div style={{
+  width: "100%", height: 80,
+  display: "flex", alignItems: "center", justifyContent: "center",
+  marginBottom: 8, overflow: "hidden", borderRadius: 8,
+  background: "#f8fafc",
+}}>
+  {(product as any).imageUrl ? (
+    <img
+      src={(product as any).imageUrl}
+      alt={product.name}
+      style={{
+        width: "100%", height: "100%",
+        objectFit: "cover", borderRadius: 8,
+      }}
+    />
+  ) : (
+    <span style={{ fontSize: 32, lineHeight: 1 }}>
+      {catEmoji(product.category)}
+    </span>
+  )}
+</div>
 
       {/* Name */}
       <div

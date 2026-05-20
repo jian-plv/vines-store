@@ -5,18 +5,18 @@ import { prisma } from "./prisma";
 import type { POSProduct } from "../components/pos/pos-client";
 
 const FALLBACK: POSProduct[] = [
-  { id:"p1", name:"Fresh Milk 1L",       category:"Dairy",       price:"85.00",  currentStock:58,  status:"NEAR_EXPIRY" },
-  { id:"p2", name:"White Bread",         category:"Bakery",      price:"42.00",  currentStock:34,  status:"LOW"         },
-  { id:"p3", name:"Eggs (12pcs)",        category:"Poultry",     price:"130.00", currentStock:72,  status:"NORMAL"      },
-  { id:"p4", name:"Rice 5kg",            category:"Grains",      price:"265.00", currentStock:120, status:"NORMAL"      },
-  { id:"p5", name:"Cooking Oil 1L",      category:"Condiments",  price:"78.00",  currentStock:44,  status:"NORMAL"      },
-  { id:"p6", name:"Sardines (Large)",    category:"Canned Goods",price:"28.00",  currentStock:85,  status:"NORMAL"      },
-  { id:"p7", name:"Instant Coffee 200g", category:"Beverages",   price:"95.00",  currentStock:80,  status:"NORMAL"      },
-  { id:"p8", name:"Vinegar 350ml",       category:"Condiments",  price:"18.00",  currentStock:40,  status:"NORMAL"      },
-  { id:"p9", name:"Cheese 165g",         category:"Dairy",       price:"78.00",  currentStock:32,  status:"NORMAL"      },
-  { id:"p10",name:"Orange Juice 1L",     category:"Beverages",   price:"75.00",  currentStock:18,  status:"LOW"         },
-  { id:"p11",name:"Soy Sauce 1L",        category:"Condiments",  price:"45.00",  currentStock:55,  status:"NORMAL"      },
-  { id:"p12",name:"Canned Tuna",         category:"Canned Goods",price:"32.00",  currentStock:90,  status:"NORMAL"      },
+  { id:"p1", name:"Fresh Milk 1L",       category:"Dairy",       price:"85.00",  currentStock:58,  status:"NEAR_EXPIRY" , imageUrl: null},
+  { id:"p2", name:"White Bread",         category:"Bakery",      price:"42.00",  currentStock:34,  status:"LOW"         , imageUrl: null},
+  { id:"p3", name:"Eggs (12pcs)",        category:"Poultry",     price:"130.00", currentStock:72,  status:"NORMAL"      , imageUrl: null},
+  { id:"p4", name:"Rice 5kg",            category:"Grains",      price:"265.00", currentStock:120, status:"NORMAL"      , imageUrl: null},
+  { id:"p5", name:"Cooking Oil 1L",      category:"Condiments",  price:"78.00",  currentStock:44,  status:"NORMAL"      , imageUrl: null},
+  { id:"p6", name:"Sardines (Large)",    category:"Canned Goods",price:"28.00",  currentStock:85,  status:"NORMAL"      , imageUrl: null},
+  { id:"p7", name:"Instant Coffee 200g", category:"Beverages",   price:"95.00",  currentStock:80,  status:"NORMAL"      , imageUrl: null},
+  { id:"p8", name:"Vinegar 350ml",       category:"Condiments",  price:"18.00",  currentStock:40,  status:"NORMAL"      , imageUrl: null},
+  { id:"p9", name:"Cheese 165g",         category:"Dairy",       price:"78.00",  currentStock:32,  status:"NORMAL"      , imageUrl: null},
+  { id:"p10",name:"Orange Juice 1L",     category:"Beverages",   price:"75.00",  currentStock:18,  status:"LOW"         , imageUrl: null},
+  { id:"p11",name:"Soy Sauce 1L",        category:"Condiments",  price:"45.00",  currentStock:55,  status:"NORMAL"      , imageUrl: null},
+  { id:"p12",name:"Canned Tuna",         category:"Canned Goods",price:"32.00",  currentStock:90,  status:"NORMAL"      , imageUrl: null},
 ];
 
 export async function loadPOSData(email: string): Promise<{
@@ -40,6 +40,7 @@ export async function loadPOSData(email: string): Promise<{
       price:        p.price.toString(),
       currentStock: p.currentStock,
       status:       p.status,
+      imageUrl:     (p as any).imageUrl ?? null,
     }));
 
     return {
