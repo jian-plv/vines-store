@@ -50,6 +50,7 @@ export function BuyerProductCatalog({ products }: { products: BuyerProduct[] }) 
   const [filterCategory, setFilterCategory] = useState("ALL");
   const [filterStatus,   setFilterStatus]   = useState("ALL");
   const [view,           setView]           = useState<"grid" | "list">("grid");
+  const [previewImg, setPreviewImg] = useState<string | null>(null);
 
   // ── Unique categories ──────────────────────────────────────────────────────
   const categories = ["ALL", ...Array.from(new Set(products.map((p) => p.category))).sort()];
@@ -116,7 +117,9 @@ export function BuyerProductCatalog({ products }: { products: BuyerProduct[] }) 
                 e.currentTarget.style.boxShadow   = "none";
               }}
             />
+            
           </div>
+          
 
           {/* Grid / List toggle */}
           <div style={{
@@ -209,9 +212,13 @@ export function BuyerProductCatalog({ products }: { products: BuyerProduct[] }) 
           gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))",
           gap: 16,
         }}>
-          {filtered.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
+{filtered.map((product) => (
+  <ProductCard
+    key={product.id}
+    product={product}
+    onPreview={setPreviewImg}
+  />
+))}
         </div>
       )}
 
@@ -240,13 +247,14 @@ export function BuyerProductCatalog({ products }: { products: BuyerProduct[] }) 
           </div>
 
           {/* Table rows */}
-          {filtered.map((p, idx) => (
-            <ProductListRow
-              key={p.id}
-              product={p}
-              isLast={idx === filtered.length - 1}
-            />
-          ))}
+{filtered.map((p, idx) => (
+  <ProductListRow
+    key={p.id}
+    product={p}
+    isLast={idx === filtered.length - 1}
+    onPreview={setPreviewImg}
+  />
+))}
         </div>
       )}
 
@@ -264,13 +272,79 @@ export function BuyerProductCatalog({ products }: { products: BuyerProduct[] }) 
           )}
         </div>
       )}
+      {/* ── Image Preview Modal ── */}
+{previewImg && (
+  <div
+    onClick={() => setPreviewImg(null)}
+    style={{
+      position:       "fixed",
+      top: 0, left: 0, right: 0, bottom: 0,
+      zIndex:         99999,
+      background:     "rgba(15,23,42,0.80)",
+      backdropFilter: "blur(6px)",
+      display:        "flex",
+      alignItems:     "center",
+      justifyContent: "center",
+      padding:        24,
+      cursor:         "zoom-out",
+    }}
+  >
+    <div
+      onClick={e => e.stopPropagation()}
+      style={{
+        position:     "relative",
+        maxWidth:     500,
+        width:        "100%",
+        background:   "#fff",
+        borderRadius: 16,
+        overflow:     "hidden",
+        boxShadow:    "0 32px 80px rgba(0,0,0,0.4)",
+        animation:    "modal-in 0.2s cubic-bezier(0.22,1,0.36,1)",
+      }}
+    >
+      <button
+        onClick={() => setPreviewImg(null)}
+        style={{
+          position:   "absolute", top: 12, right: 12, zIndex: 1,
+          width: 32,  height: 32,  borderRadius: "50%",
+          background: "rgba(0,0,0,0.5)", border: "none",
+          display:    "flex", alignItems: "center", justifyContent: "center",
+          cursor:     "pointer", color: "#fff",
+        }}
+      >
+        <X size={16} strokeWidth={2.5}/>
+      </button>
+      <img
+        src={previewImg}
+        alt="Product preview"
+        style={{
+          width:      "100%",
+          height:     "auto",
+          maxHeight:  "80vh",
+          objectFit:  "contain",
+          display:    "block",
+          background: "#f8fafc",
+        }}
+      />
+    </div>
+    <style>{`
+      @keyframes modal-in {
+        from { opacity:0; transform: scale(0.94) translateY(10px); }
+        to   { opacity:1; transform: scale(1) translateY(0); }
+      }
+    `}</style>
+  </div>
+)}
     </div>
   );
 }
 
 // ─── Product Grid Card ────────────────────────────────────────────────────────
 
-function ProductCard({ product: p }: { product: BuyerProduct }) {
+function ProductCard({ product: p, onPreview }: {
+  product:   BuyerProduct;
+  onPreview: (url: string) => void;
+}) {
   const [hovered, setHovered] = useState(false);
   const cfg = STATUS_CFG[p.status] ?? STATUS_CFG.NORMAL;
   const Icon = cfg.icon;
@@ -305,20 +379,38 @@ function ProductCard({ product: p }: { product: BuyerProduct }) {
       )}
 
       {/* Image / emoji */}
+<div
+  style={{
+    height: 110, background: "#f8fafc",
+    display: "flex", alignItems: "center", justifyContent: "center",
+    borderBottom: "1px solid #f1f5f9", overflow: "hidden",
+    position: "relative",
+    cursor: p.imageUrl ? "zoom-in" : "default",
+  }}
+  onClick={e => {
+    if (p.imageUrl) { e.stopPropagation(); onPreview(p.imageUrl); }
+  }}
+>
+  {p.imageUrl ? (
+    <>
+      <img src={p.imageUrl} alt={p.name}
+        style={{ width:"100%", height:"100%", objectFit:"cover" }}/>
       <div style={{
-        height: 110, background: "#f8fafc",
-        display: "flex", alignItems: "center", justifyContent: "center",
-        borderBottom: "1px solid #f1f5f9", overflow: "hidden",
-      }}>
-        {p.imageUrl ? (
-          <img src={p.imageUrl} alt={p.name}
-            style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-        ) : (
-          <span style={{ fontSize: 44 }}>
-            {CAT_EMOJI[p.category] ?? "🛒"}
-          </span>
-        )}
+        position:"absolute", inset:0,
+        background:"rgba(0,0,0,0)",
+        display:"flex", alignItems:"center", justifyContent:"center",
+        fontSize:20, transition:"background 0.15s",
+      }}
+        onMouseEnter={e => (e.currentTarget as HTMLDivElement).style.background="rgba(0,0,0,0.25)"}
+        onMouseLeave={e => (e.currentTarget as HTMLDivElement).style.background="rgba(0,0,0,0)"}
+      >
+        🔍
       </div>
+    </>
+  ) : (
+    <span style={{ fontSize: 44 }}>{CAT_EMOJI[p.category] ?? "🛒"}</span>
+  )}
+</div>
 
       {/* Content */}
       <div style={{ padding: "14px 14px 12px" }}>
@@ -384,9 +476,11 @@ function ProductCard({ product: p }: { product: BuyerProduct }) {
 // ─── Product List Row ─────────────────────────────────────────────────────────
 
 function ProductListRow({
-  product: p, isLast,
+  product: p, isLast, onPreview,
 }: {
-  product: BuyerProduct; isLast: boolean;
+  product:   BuyerProduct;
+  isLast:    boolean;
+  onPreview: (url: string) => void;
 }) {
   const [hovered, setHovered] = useState(false);
   const cfg = STATUS_CFG[p.status] ?? STATUS_CFG.NORMAL;
@@ -406,17 +500,36 @@ function ProductListRow({
     >
       {/* Product */}
       <div style={{ padding: "13px 16px", display: "flex", alignItems: "center", gap: 10 }}>
-        <div style={{
-          width: 36, height: 36, borderRadius: 8,
-          background: "#f8fafc", border: "1px solid #e2e8f0",
-          display: "flex", alignItems: "center", justifyContent: "center",
-          fontSize: 18, flexShrink: 0, overflow: "hidden",
-        }}>
-          {p.imageUrl
-            ? <img src={p.imageUrl} alt={p.name}
-                style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-            : CAT_EMOJI[p.category] ?? "🛒"}
-        </div>
+        
+<div
+  onClick={e => {
+    if (p.imageUrl) { e.stopPropagation(); onPreview(p.imageUrl); }
+  }}
+  style={{
+    width: 40, height: 40, borderRadius: 8,
+    background: "#f8fafc", border: "1px solid #e2e8f0",
+    display: "flex", alignItems: "center", justifyContent: "center",
+    fontSize: 18, flexShrink: 0, overflow: "hidden",
+    cursor: p.imageUrl ? "zoom-in" : "default",
+    transition: "all 0.13s", position: "relative",
+  }}
+  title={p.imageUrl ? "Click to enlarge" : ""}
+  onMouseEnter={e => {
+    if (p.imageUrl) {
+      (e.currentTarget as HTMLDivElement).style.borderColor = "#2563eb";
+      (e.currentTarget as HTMLDivElement).style.transform   = "scale(1.08)";
+    }
+  }}
+  onMouseLeave={e => {
+    (e.currentTarget as HTMLDivElement).style.borderColor = "#e2e8f0";
+    (e.currentTarget as HTMLDivElement).style.transform   = "scale(1)";
+  }}
+>
+  {p.imageUrl
+    ? <img src={p.imageUrl} alt={p.name}
+        style={{ width:"100%", height:"100%", objectFit:"cover" }}/>
+    : CAT_EMOJI[p.category] ?? "🛒"}
+</div>
         <div>
           <div style={{ fontSize: 13.5, fontWeight: 600, color: "#0f172a" }}>{p.name}</div>
           {p.isDiscounted && p.discountPercent && (
