@@ -166,10 +166,14 @@ export default function LoginPage() {
 
           {/* Forgot password */}
           <div className="login-forgot-row">
-            <a href="#" className="login-forgot-link" tabIndex={-1}>
-              Forgot Password?
-            </a>
-          </div>
+  <span style={{
+    fontSize: 12,
+    color: "#94a3b8",
+    fontFamily: "DM Sans, sans-serif",
+  }}>
+    Buyer password: <strong style={{ color: "#64748b" }}>vinestoreBuyer</strong>
+  </span>
+</div>
 
           {/* Error */}
           {error && (
