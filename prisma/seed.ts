@@ -6,12 +6,25 @@ const prisma = new PrismaClient();
 async function main() {
   console.log("🌱  Seeding Vine's Store …");
 
-  // ── Create users with hashed passwords ──────────────────────────────────
-  const adminPassword = await bcrypt.hash("vinestoreSakalam26", 12);
-  const staffPassword = await bcrypt.hash("wow26sakalam", 12);
-  const buyerPassword = await bcrypt.hash("vinestoreBuyer", 12);
+  // ── Read passwords from environment variables ─────────────────────────────
+  const adminPass = process.env.SEED_ADMIN_PASSWORD;
+  const staffPass = process.env.SEED_STAFF_PASSWORD;
+  const buyerPass = process.env.SEED_BUYER_PASSWORD;
 
-  const admin = await prisma.user.upsert({
+  if (!adminPass || !staffPass || !buyerPass) {
+    throw new Error(
+      "Missing password env variables.\n" +
+      "Add SEED_ADMIN_PASSWORD, SEED_STAFF_PASSWORD, SEED_BUYER_PASSWORD to your .env file."
+    );
+  }
+
+  // ── Hash passwords ────────────────────────────────────────────────────────
+  const adminPassword = await bcrypt.hash(adminPass, 12);
+  const staffPassword = await bcrypt.hash(staffPass, 12);
+  const buyerPassword = await bcrypt.hash(buyerPass, 12);
+
+  // ── Create users ──────────────────────────────────────────────────────────
+  await prisma.user.upsert({
     where:  { email: "admin@vine.com" },
     update: { hashedPassword: adminPassword, name: "Store Owner", role: "ADMIN" },
     create: {
@@ -21,8 +34,9 @@ async function main() {
       role:           "ADMIN",
     },
   });
+  console.log("   ✓ Admin user created");
 
-  const staff = await prisma.user.upsert({
+  await prisma.user.upsert({
     where:  { email: "staff@vine.com" },
     update: { hashedPassword: staffPassword, name: "Store Staff", role: "STAFF" },
     create: {
@@ -32,8 +46,9 @@ async function main() {
       role:           "STAFF",
     },
   });
+  console.log("   ✓ Staff user created");
 
-  const buyer = await prisma.user.upsert({
+  await prisma.user.upsert({
     where:  { email: "buyer@vine.com" },
     update: { hashedPassword: buyerPassword, name: "Customer", role: "BUYER" },
     create: {
@@ -43,10 +58,7 @@ async function main() {
       role:           "BUYER",
     },
   });
-
-  console.log("   ✓ Admin:  admin@vine.com  / VineAdmin2024!");
-  console.log("   ✓ Staff:  staff@vine.com  / VineStaff2024!");
-  console.log("   ✓ Buyer:  buyer@vine.com  / vinestoreBuyer");
+  console.log("   ✓ Buyer user created");
 
   // ── Categories ────────────────────────────────────────────────────────────
   const categoryNames = [
@@ -83,7 +95,7 @@ async function main() {
   ];
 
   for (const p of products) {
-    const barcode = `${p.name.toUpperCase().replace(/\s+/g, "-")}-${Date.now()}`;
+    const barcode = `${p.name.toUpperCase().replace(/\s+/g, "-")}`;
     await prisma.product.upsert({
       where:  { barcode },
       update: {},
@@ -100,12 +112,7 @@ async function main() {
     console.log(`   ✓ ${p.name}`);
   }
 
-  // ── Sample sales ──────────────────────────────────────────────────────────
-  console.log("   ✓ Seed complete!");
-  console.log("\n✅  Done!");
-  console.log("   admin@vine.com  / VineAdmin2024!");
-  console.log("   staff@vine.com  / VineStaff2024!");
-  console.log("   buyer@vine.com  / vinestoreBuyer");
+  console.log("\n✅  Seeding complete!");
 }
 
 main()
