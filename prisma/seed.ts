@@ -7,8 +7,8 @@ async function main() {
   console.log("🌱  Seeding Vine's Store …");
 
   // ── Create users with hashed passwords ──────────────────────────────────
-  const adminPassword = await bcrypt.hash("VineAdmin2024!", 12);
-  const staffPassword = await bcrypt.hash("VineStaff2024!", 12);
+  const adminPassword = await bcrypt.hash("vinestoreSakalam26", 12);
+  const staffPassword = await bcrypt.hash("wow26sakalam", 12);
   const buyerPassword = await bcrypt.hash("vinestoreBuyer", 12);
 
   const admin = await prisma.user.upsert({
