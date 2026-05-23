@@ -1,30 +1,7 @@
 import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-
-// ─── Hardcoded users (all 3 roles) ───────────────────────────────────────────
-const HARDCODED_USERS = [
-  {
-    id:       "user-admin-001",
-    name:     "Store Owner",
-    email:    "admin@vine.com",
-    password: "vinestoreSakalam26",
-    role:     "ADMIN" as const,
-  },
-  {
-    id:       "user-staff-001",
-    name:     "Store Staff",
-    email:    "staff@vine.com",
-    password: "wow26sakalam",
-    role:     "STAFF" as const,
-  },
-  {
-    id:       "user-buyer-001",
-    name:     "Customer",
-    email:    "buyer@vine.com",
-    password: "vinestoreBuyer",
-    role:     "BUYER" as const,
-  },
-];
+import { prisma } from "@/lib/prisma";
+import bcrypt from "bcryptjs";
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -37,20 +14,32 @@ export const authOptions: NextAuthOptions = {
       async authorize(credentials) {
         if (!credentials?.username || !credentials?.password) return null;
 
-        const user = HARDCODED_USERS.find(
-          (u) =>
-            u.email    === credentials.username.trim().toLowerCase() &&
-            u.password === credentials.password
-        );
+        try {
+          // Find user in database
+          const user = await prisma.user.findUnique({
+            where: { email: credentials.username.trim().toLowerCase() },
+          });
 
-        if (!user) return null;
+          if (!user) return null;
 
-        return {
-          id:    user.id,
-          name:  user.name,
-          email: user.email,
-          role:  user.role,
-        };
+          // Compare hashed password
+          const isValid = await bcrypt.compare(
+            credentials.password,
+            user.hashedPassword
+          );
+
+          if (!isValid) return null;
+
+          return {
+            id:    user.id,
+            name:  user.name,
+            email: user.email,
+            role:  user.role,
+          };
+        } catch (error) {
+          console.error("Auth error:", error);
+          return null;
+        }
       },
     }),
   ],
@@ -82,5 +71,5 @@ export const authOptions: NextAuthOptions = {
     maxAge:   8 * 60 * 60,
   },
 
-  secret: process.env.NEXTAUTH_SECRET ?? "dev-secret-change-in-production",
+  secret: process.env.NEXTAUTH_SECRET,
 };

@@ -18,6 +18,12 @@ enum Role {
   SUPPLIER
 }
 
+enum UserRole {
+  ADMIN
+  STAFF
+  BUYER
+}
+
 enum ProductStatus {
   NORMAL
   LOW
@@ -41,13 +47,13 @@ enum OrderStatus {
 // ─── Models ───────────────────────────────────────────────────────────────────
 
 model User {
-  id            String    @id @default(cuid())
-  name          String
-  email         String    @unique
-  password      String    // hashed with bcrypt
-  role          Role      @default(STAFF)
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  id             String    @id @default(cuid())
+  name           String
+  email          String    @unique
+  hashedPassword String
+  role           UserRole  @default(STAFF)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
 
   stockMovements StockMovement[]
   sales          Sale[]
